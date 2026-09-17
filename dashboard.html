@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leads — Amanda Bueno</title>
+<meta name="robots" content="noindex,nofollow">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{color-scheme:dark;--bg:#0A0A0A;--card:#171717;--line:#262626;--txt:#F5F5F5;--mut:#8A8A8A;--dim:#5A5A5A;--acc:#F5F5F5;--l1:#E5E5E5;--l2:#7C9CF5;--l3:#5FD39A;--red:#F87171;--wa:#1FA855}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;min-height:100%}
+button,input{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+.hide{display:none!important}
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lbox{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:28px}
+.lbox h1{font-size:15px;font-weight:600;letter-spacing:.04em;margin-bottom:4px}
+.lbox p{color:var(--mut);margin-bottom:20px}
+.fld{display:grid;gap:6px;margin-bottom:14px}
+.fld label{font-size:11px;color:var(--mut);letter-spacing:.06em;text-transform:uppercase}
+.fld input{background:#0F0F0F;border:1px solid var(--line);border-radius:6px;padding:10px 12px;outline:0}
+.fld input:focus{border-color:#3A3A3A}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:#1F1F1F;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:600;font-size:12px;letter-spacing:.04em;transition:background .15s,border-color .15s}
+.btn:hover{background:#262626;border-color:#333}
+.btn.pri{background:var(--txt);color:#0A0A0A;border-color:var(--txt);width:100%;padding:11px}
+.btn.pri:hover{background:#DADADA}
+.err{color:var(--red);font-size:12px;min-height:16px;margin-top:8px}
+/* app */
+.app{max-width:1240px;margin:0 auto;padding:28px 20px 60px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+.top h1{font-size:18px;font-weight:700;letter-spacing:.06em}
+.top p{color:var(--mut);margin-top:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.ch h2{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.range{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);letter-spacing:.06em}
+.range input{background:#0F0F0F;border:1px solid var(--line);border-radius:6px;padding:6px 8px;color:var(--txt);font-size:12px}
+.range input::-webkit-calendar-picker-indicator{filter:invert(.6)}
+.chart{position:relative;height:280px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;color:var(--mut);font-size:11px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:2px;display:inline-block;border-radius:2px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi small{display:block;color:var(--mut);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.kpi b{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{font-size:11px;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-weight:600}
+td{padding:10px;border-bottom:1px solid #1F1F1F;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.empty{color:var(--dim);padding:22px 10px;text-align:center}
+.wab{display:inline-flex;align-items:center;gap:6px;border:1px solid #234A33;background:#0F1F16;color:#7CD9A2;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:600}
+.wab:hover{background:#15301F}
+.wab svg{width:13px;height:13px}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:2px 6px;font-size:11px;color:var(--mut)}
+@media (max-width:820px){.kpis{grid-template-columns:1fr 1fr}.top{flex-direction:column}.chart{height:220px}}
+@media (max-width:480px){.kpis{grid-template-columns:1fr}.app{padding:18px 14px 40px}}
+</style>
+</head>
+<body>
+
+<section class="login" id="login">
+  <form class="lbox" id="lform">
+    <h1>LEADS — AMANDA BUENO</h1>
+    <p>Acesso restrito ao escritório.</p>
+    <div class="fld"><label for="u">Usuário</label><input id="u" autocomplete="username" required></div>
+    <div class="fld"><label for="p">Senha</label><input id="p" type="password" autocomplete="current-password" required></div>
+    <button class="btn pri" type="submit" id="lbtn">ENTRAR</button>
+    <div class="err" id="lerr"></div>
+  </form>
+</section>
+
+<main class="app hide" id="app">
+  <div class="top">
+    <div><h1>LEADS — AMANDA BUENO</h1><p id="sub">Carregando…</p></div>
+    <button class="btn" id="logout">SAIR</button>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><small>Visitas no período</small><b id="kv">–</b></div>
+    <div class="kpi"><small>Leads no período</small><b id="kl">–</b></div>
+    <div class="kpi"><small>Conversão</small><b id="kc">–</b></div>
+    <div class="kpi"><small>Leads hoje</small><b id="kt">–</b></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <h2>Evolução diária</h2>
+      <div class="range">DE <input type="date" id="d1"> ATÉ <input type="date" id="d2"></div>
+    </div>
+    <div class="chart"><canvas id="cv"></canvas></div>
+    <div class="legend"><span><i style="background:var(--l1)"></i>Visitas</span><span><i style="background:var(--l2)"></i>Cadastros</span><span><i style="background:var(--l3)"></i>Taxa de conversão (%)</span></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><h2>Conversão por LP</h2></div>
+    <div class="tw"><table><thead><tr><th>LP</th><th class="num">Visitas</th><th class="num">Leads</th><th class="num">Conv.</th></tr></thead><tbody id="tlp"></tbody></table></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><h2>Leads</h2><span class="tag" id="lcount"></span></div>
+    <div class="tw"><table><thead><tr><th>Nome</th><th>WhatsApp</th><th>LP</th><th>Origem</th><th>Data</th><th>Ação</th></tr></thead><tbody id="tleads"></tbody></table></div>
+  </div>
+</main>
+
+<script>
+var SUPABASE_URL = "https://qxhnjzyhtllmtdrcyygi.supabase.co";
+var SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4aG5qenlodGxsbXRkcmN5eWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzczNjgsImV4cCI6MjA5NzgxMzM2OH0.DWf4I_x9F--H7ZZHUt_n4V3B__Nlsf1jNZdUV0vNBLU";
+var SITE = "amanda-bueno";
+var CLIENTE = "Amanda Bueno Advocacia";
+var USERS = { "admin": "admin@amanda-bueno.adsbr.internal" };
+
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+var $ = function(id){ return document.getElementById(id); };
+var chart = null, visits = [], leads = [];
+
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+function brDate(iso){ var d=new Date(iso); return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+function pct(a,b){ return b ? (100*a/b).toFixed(1).replace('.',',')+'%' : '0%'; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function digits(s){ return String(s||'').replace(/\D/g,''); }
+function waLink(nome, tel){
+  var n = digits(tel); if(n.length<=11) n = '55'+n;
+  var msg = 'Olá, '+(nome||'').split(' ')[0]+'. Recebemos seu contato através da '+CLIENTE+' e gostaria de dar continuidade ao seu atendimento.';
+  return 'https://wa.me/'+n+'?text='+encodeURIComponent(msg);
+}
+
+/* ---- auth ---- */
+$('lform').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var u = $('u').value.trim().toLowerCase(), p = $('p').value;
+  var email = USERS[u]; $('lerr').textContent='';
+  if(!email){ $('lerr').textContent='Usuário ou senha inválidos.'; return; }
+  $('lbtn').disabled = true;
+  var r = await sb.auth.signInWithPassword({ email: email, password: p });
+  $('lbtn').disabled = false;
+  if(r.error){ $('lerr').textContent='Usuário ou senha inválidos.'; return; }
+  enter();
+});
+$('logout').addEventListener('click', async function(){ await sb.auth.signOut(); location.reload(); });
+sb.auth.getSession().then(function(r){ if(r.data.session) enter(); });
+
+async function enter(){
+  $('login').classList.add('hide'); $('app').classList.remove('hide');
+  var end = new Date(), start = new Date(); start.setDate(end.getDate()-29);
+  $('d1').value = fmtDate(start); $('d2').value = fmtDate(end);
+  $('d1').addEventListener('change', load); $('d2').addEventListener('change', load);
+  load();
+}
+
+/* ---- data ---- */
+async function load(){
+  var from = $('d1').value, to = $('d2').value;
+  if(!from || !to) return;
+  var fromISO = new Date(from+'T00:00:00').toISOString();
+  var toISO = new Date(to+'T23:59:59.999').toISOString();
+  var rv = await sb.from('lp_visits').select('id,path,referrer,created_at').eq('site',SITE).gte('created_at',fromISO).lte('created_at',toISO).order('created_at',{ascending:false}).limit(20000);
+  var rl = await sb.from('lp_leads').select('id,nome,whatsapp,origem,created_at').eq('site',SITE).gte('created_at',fromISO).lte('created_at',toISO).order('created_at',{ascending:false}).limit(5000);
+  if(rv.error || rl.error){ $('sub').textContent = 'Erro ao carregar dados: '+((rv.error||rl.error).message); return; }
+  visits = rv.data||[]; leads = rl.data||[];
+  var tot = await sb.from('lp_leads').select('id',{count:'exact',head:true}).eq('site',SITE);
+  $('sub').textContent = (tot.count||0)+' lead'+((tot.count||0)===1?'':'s')+' no total · '+leads.length+' no período';
+  render(from,to);
+}
+
+function render(from,to){
+  var today = fmtDate(new Date());
+  $('kv').textContent = visits.length; $('kl').textContent = leads.length;
+  $('kc').textContent = pct(leads.length, visits.length);
+  $('kt').textContent = leads.filter(function(l){ return l.created_at.slice(0,10)===today; }).length;
+
+  /* daily series */
+  var days=[], d=new Date(from+'T00:00:00'), e=new Date(to+'T00:00:00');
+  while(d<=e){ days.push(fmtDate(d)); d.setDate(d.getDate()+1); }
+  var mv={}, ml={};
+  visits.forEach(function(v){ var k=new Date(v.created_at); k=k.getFullYear()+'-'+String(k.getMonth()+1).padStart(2,'0')+'-'+String(k.getDate()).padStart(2,'0'); mv[k]=(mv[k]||0)+1; });
+  leads.forEach(function(l){ var k=new Date(l.created_at); k=k.getFullYear()+'-'+String(k.getMonth()+1).padStart(2,'0')+'-'+String(k.getDate()).padStart(2,'0'); ml[k]=(ml[k]||0)+1; });
+  var sv=days.map(function(k){return mv[k]||0}), sl=days.map(function(k){return ml[k]||0});
+  var sc=days.map(function(k,i){ return sv[i] ? +(100*sl[i]/sv[i]).toFixed(1) : 0; });
+  var labels=days.map(function(k){ return k.slice(8,10)+'/'+k.slice(5,7); });
+  if(chart) chart.destroy();
+  var grid='#242424', tick='#6E6E6E';
+  chart = new Chart($('cv'), {
+    type:'line',
+    data:{labels:labels,datasets:[
+      {label:'Visitas',data:sv,borderColor:'#E5E5E5',backgroundColor:'transparent',tension:.3,pointRadius:2,borderWidth:1.6,yAxisID:'y'},
+      {label:'Cadastros',data:sl,borderColor:'#7C9CF5',backgroundColor:'transparent',tension:.3,pointRadius:2,borderWidth:1.6,yAxisID:'y'},
+      {label:'Taxa de conversão (%)',data:sc,borderColor:'#5FD39A',backgroundColor:'transparent',tension:.3,pointRadius:2,borderWidth:1.6,borderDash:[4,3],yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1F1F1F',borderColor:'#333',borderWidth:1,titleColor:'#F5F5F5',bodyColor:'#CFCFCF'}},
+      scales:{x:{grid:{color:grid},ticks:{color:tick,maxTicksLimit:12}},y:{beginAtZero:true,grid:{color:grid},ticks:{color:tick,precision:0}},y2:{position:'right',beginAtZero:true,grid:{drawOnChartArea:false},ticks:{color:tick,callback:function(v){return v+'%'}}}}}
+  });
+
+  /* conversão por LP */
+  var lp={};
+  visits.forEach(function(v){ var k=v.path||'/'; lp[k]=lp[k]||{v:0,l:0}; lp[k].v++; });
+  leads.forEach(function(l){ var k=l.origem||'/'; lp[k]=lp[k]||{v:0,l:0}; lp[k].l++; });
+  var keys=Object.keys(lp).sort(function(a,b){return lp[b].v-lp[a].v});
+  $('tlp').innerHTML = keys.length ? keys.map(function(k){ return '<tr><td>'+esc(k)+'</td><td class="num">'+lp[k].v+'</td><td class="num">'+lp[k].l+'</td><td class="num">'+pct(lp[k].l,lp[k].v)+'</td></tr>'; }).join('') : '<tr><td colspan="4" class="empty">Nenhum dado encontrado</td></tr>';
+
+  /* leads */
+  $('lcount').textContent = leads.length+' no período';
+  $('tleads').innerHTML = leads.length ? leads.map(function(l){
+    var tel=digits(l.whatsapp), show=tel.length>=10?'('+tel.slice(0,2)+') '+tel.slice(2,7)+'-'+tel.slice(7):esc(l.whatsapp);
+    return '<tr><td>'+esc(l.nome)+'</td><td>'+show+'</td><td>'+esc(l.origem||'/')+'</td><td><span class="tag">Site</span></td><td>'+brDate(l.created_at)+'</td><td><a class="wab" target="_blank" rel="noopener" href="'+waLink(l.nome,l.whatsapp)+'"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2m0 1.67c4.55 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24-1.49 0-2.94-.4-4.21-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24"/></svg>WhatsApp</a></td></tr>';
+  }).join('') : '<tr><td colspan="6" class="empty">Nenhum lead encontrado</td></tr>';
+}
+</script>
+</body>
+</html>
