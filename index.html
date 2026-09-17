@@ -332,6 +332,15 @@ section{position:relative}
 .ftr a:hover{color:var(--gold-light)}
 .ftr .btm{border-top:1px solid rgba(220,200,148,.12);margin-top:48px;padding-top:22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:rgba(255,255,255,.4)}
 
+.fab{position:fixed;right:22px;bottom:22px;z-index:61;width:60px;height:60px;border-radius:50%;background:linear-gradient(180deg,#25B862,var(--wa));color:#fff;display:grid;place-items:center;box-shadow:0 14px 30px -10px rgba(31,168,85,.8),0 0 0 1px rgba(255,255,255,.08);transition:transform .25s,box-shadow .25s}
+.fab:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 20px 36px -12px rgba(31,168,85,.9)}
+.fab svg{width:30px;height:30px}
+.fab::before{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(31,168,85,.5);animation:pulse 2.6s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.85);opacity:.8}100%{transform:scale(1.35);opacity:0}}
+.fab .tip{position:absolute;right:72px;top:50%;transform:translateY(-50%);background:var(--char);color:#fff;font-size:13px;font-weight:600;padding:8px 12px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;border:1px solid rgba(220,200,148,.3)}
+.fab:hover .tip{opacity:1}
+@media (max-width:860px){.fab{bottom:calc(18px + env(safe-area-inset-bottom));right:16px;width:58px;height:58px}.fab svg{width:26px;height:26px}.fab .tip{display:none}}
+@media (prefers-reduced-motion:reduce){.fab::before{animation:none}}
 /* mobile sticky bar */
 .mbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(26,25,23,.94);backdrop-filter:blur(12px);border-top:1px solid rgba(220,200,148,.2)}
 .mbar .btn{width:100%;justify-content:center;padding:16px}
@@ -382,8 +391,6 @@ section{position:relative}
   .faq .head{position:static}
   .final-photo{width:100%}
   .ftr .wrap{grid-template-columns:1fr;gap:28px}
-  .mbar{display:block}
-  body{padding-bottom:80px}
 }
 @media (max-width:520px){
   body{font-size:16px}
@@ -513,7 +520,7 @@ section{position:relative}
         <div class="mock" aria-hidden="true">
           <div class="stmt">
             <div class="top">Extrato de benefício <span>competência 08/2026</span></div>
-            <div class="row"><div><b>Valor do benefício</b><small>crédito</small></div><em>R$ 1.518,00</em></div>
+            <div class="row"><div><b>Valor do benefício</b><small>crédito</small></div><em>R$ 1.621,00</em></div>
             <div class="row"><div><b>Seguro prestamista</b><small>débito</small></div><em>– R$ 39,90</em></div>
             <div class="row flag"><div><b>Empréstimo consignado 03/72</b><small>débito</small></div><em>– R$ 212,40</em></div>
             <div class="row"><div><b>Tarifa cesta de serviços</b><small>débito</small></div><em>– R$ 24,50</em></div>
@@ -586,8 +593,8 @@ section{position:relative}
     <div class="bank-art rv" aria-hidden="true">
       <div class="phone" data-parallax="0.05">
         <div class="scr">
-          <div class="bar"><small>Saldo disponível</small><b>R$ 1.241,20</b></div>
-          <div class="tx"><span>Crédito INSS</span><b>+ R$ 1.518,00</b></div>
+          <div class="bar"><small>Saldo disponível</small><b>R$ 1.247,90</b></div>
+          <div class="tx"><span>Crédito INSS</span><b>+ R$ 1.621,00</b></div>
           <div class="tx bad"><span>Empréstimo não reconhecido</span><b>– R$ 212,40</b></div>
           <div class="tx"><span>Farmácia</span><b>– R$ 38,90</b></div>
           <div class="tx bad"><span>Seguro não contratado</span><b>– R$ 25,50</b></div>
@@ -770,7 +777,7 @@ section{position:relative}
   </div>
 </footer>
 
-<div class="mbar"><a class="btn btn-wa js-wa" href="#contato"><svg><use href="#i-wa"/></svg>Falar com a equipe no WhatsApp</a></div>
+<a class="fab" id="fab" href="/redirect" aria-label="Falar com a equipe no WhatsApp"><span class="tip">Falar com a equipe</span><svg><use href="#i-wa"/></svg></a>
 
 <script>
 /* ====== CONFIGURAÇÃO ======
@@ -782,6 +789,7 @@ var CONFIG = {
 };
 
 document.getElementById('yr').textContent = new Date().getFullYear();
+document.getElementById('fab').href = CONFIG.redirectUrl;
 
 /* ====== TRACKING (Supabase — ADS BR CLIENTES) ====== */
 var SB = { url: "https://qxhnjzyhtllmtdrcyygi.supabase.co", anon: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4aG5qenlodGxsbXRkcmN5eWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzczNjgsImV4cCI6MjA5NzgxMzM2OH0.DWf4I_x9F--H7ZZHUt_n4V3B__Nlsf1jNZdUV0vNBLU", site: "amanda-bueno" };
