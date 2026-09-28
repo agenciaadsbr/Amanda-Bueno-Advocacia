@@ -470,7 +470,7 @@ section{position:relative}
       <p class="lead rv d2">Atendimento jurídico para questões bancárias e previdenciárias, com análise individual do seu caso.</p>
       <div class="cta-row rv d3">
         <a class="btn btn-wa js-wa" href="#contato"><svg><use href="#i-wa"/></svg>Falar com a equipe no WhatsApp</a>
-        <a class="btn btn-ghost" href="#situacoes">Entender meu caso</a>
+        <a class="btn btn-ghost" href="#contato">Entender meu caso</a>
       </div>
       <div class="trust rv d4"><svg><use href="#i-pin"/></svg>Atendimento para clientes em Goiás</div>
     </div>
@@ -777,19 +777,16 @@ section{position:relative}
   </div>
 </footer>
 
-<a class="fab" id="fab" href="/redirect" aria-label="Falar com a equipe no WhatsApp"><span class="tip">Falar com a equipe</span><svg><use href="#i-wa"/></svg></a>
+<a class="fab" id="fab" href="#contato" aria-label="Falar com a equipe no WhatsApp"><span class="tip">Falar com a equipe</span><svg><use href="#i-wa"/></svg></a>
 
 <script>
 /* ====== CONFIGURAÇÃO ======
    Preencha o número do escritório (DDI+DDD+número, só dígitos). Enquanto vazio, os botões levam ao formulário. */
 var CONFIG = {
-  whatsapp: "",                 // ex.: "5562999999999"
-  waMessage: "Olá! Vim pelo site e gostaria de orientação sobre o meu caso.",
-  redirectUrl: "/redirect"
+  redirectUrl: "/redirect"   // o WhatsApp é aberto pela página /redirect, após o formulário
 };
 
 document.getElementById('yr').textContent = new Date().getFullYear();
-document.getElementById('fab').href = CONFIG.redirectUrl;
 
 /* ====== TRACKING (Supabase — ADS BR CLIENTES) ====== */
 var SB = { url: "https://qxhnjzyhtllmtdrcyygi.supabase.co", anon: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4aG5qenlodGxsbXRkcmN5eWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyMzczNjgsImV4cCI6MjA5NzgxMzM2OH0.DWf4I_x9F--H7ZZHUt_n4V3B__Nlsf1jNZdUV0vNBLU", site: "amanda-bueno" };
@@ -805,11 +802,6 @@ function sbInsert(table, row){
 sbInsert("lp_visits", { site: SB.site, referrer: document.referrer || null, path: location.pathname });
 
 
-(function(){
-  if(!CONFIG.whatsapp) return;
-  var url = "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(CONFIG.waMessage);
-  document.querySelectorAll('.js-wa').forEach(function(a){ a.href = url; a.target = "_blank"; a.rel = "noopener"; });
-})();
 
 var burger = document.getElementById('burger');
 var mnav = document.getElementById('mnav');
